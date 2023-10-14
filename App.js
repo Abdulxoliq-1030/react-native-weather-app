@@ -1,15 +1,23 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 import Loader from "./components/loader";
 import { useEffect, useState } from "react";
 import Weather from "./components/weather";
 import * as Location from "expo-location";
+import axios from "axios";
+
+const API_KEY = "398881b620ac7e110ce493db6886fe95";
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [location, setLocation] = useState({
-    latitude: null,
-    longitude: null,
-  });
+  const [location, setLocation] = useState(null);
+
+  const getWeather = async (latitude, longitude) => {
+    const { data } = await axios.get(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
+    );
+    setLocation(data);
+    setIsLoading(false);
+  };
 
   const getLocation = async () => {
     try {
@@ -21,23 +29,25 @@ export default function App() {
       const {
         coords: { latitude, longitude },
       } = await Location.getCurrentPositionAsync({});
-      setLocation({
-        latitude,
-        longitude,
-      });
+      getWeather(latitude, longitude);
     } catch (err) {
       Alert.alert("I can't find your current location, so bad ):");
     }
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      getLocation();
-      setIsLoading(false);
-    }, 2000);
+    getLocation();
   }, []);
 
-  return isLoading ? <Loader /> : <Weather />;
+  return isLoading ? (
+    <Loader />
+  ) : (
+    <Weather
+      temp={location.main.temp}
+      name={location.name}
+      condition={location.weather[0].main}
+    />
+  );
 }
 
 const styles = StyleSheet.create({});
