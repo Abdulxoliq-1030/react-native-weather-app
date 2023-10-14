@@ -1,6 +1,6 @@
 import React from "react";
 import AnimatedLoader from "react-native-animated-loader";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet } from "react-native";
 
 export default function Loader() {
   return (
