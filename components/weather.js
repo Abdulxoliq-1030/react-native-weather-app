@@ -1,6 +1,13 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
-import { StyleSheet, Text } from "react-native";
+import React, { useState } from "react";
+import {
+  Button,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const weatherOptions = {
@@ -66,26 +73,102 @@ const weatherOptions = {
   },
 };
 
-export default function Weather({ temp, name, condition }) {
-  console.log(condition);
+export default function Weather({ temp, name, condition, setWeather }) {
+  const [query, setQuery] = useState("");
+
   return (
     <LinearGradient
       colors={weatherOptions[condition].gradient}
-      style={styles.container}
+      style={styles.mainContainer}
     >
-      <MaterialCommunityIcons name={weatherOptions[condition].iconName} />
-      <Text>{temp}</Text>
-      <Text>{name}</Text>
-      <Text>{weatherOptions[condition].title}</Text>
-      <Text>{weatherOptions[condition].description}</Text>
+      <StatusBar barStyle={"light-content"} />
+      <View style={styles.container}>
+        <MaterialCommunityIcons
+          name={weatherOptions[condition].iconName}
+          size={96}
+          color={"#fff"}
+        />
+        <View style={styles.flex}>
+          <Text style={styles.temp}>{temp}°C</Text>
+          <Text style={styles.temp}> | {name}</Text>
+        </View>
+      </View>
+      <View style={{ ...styles.container, ...styles.textContainer }}>
+        <Text style={styles.title}>{weatherOptions[condition].title}</Text>
+        <Text style={styles.description}>
+          {weatherOptions[condition].description}
+        </Text>
+        <View style={styles.searchContainer}>
+          <TextInput
+            placeholder="City"
+            style={styles.input}
+            value={query}
+            onChangeText={(text) => setQuery(text)}
+          />
+          <Button
+            title="Search"
+            style={styles.btn}
+            onPress={() => setWeather(query)}
+          />
+        </View>
+      </View>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+  },
+
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  temp: {
+    fontSize: 42,
+    color: "#fff",
+  },
+
+  flex: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  textContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    paddingHorizontal: 40,
+  },
+  title: {
+    color: "#fff",
+    fontSize: 44,
+    fontWeight: 300,
+    marginBottom: 10,
+    textAlign: "left",
+  },
+  description: {
+    color: "#fff",
+    fontWeight: 600,
+    fontSize: 24,
+    textAlign: "left",
+  },
+  searchContainer: {
+    backgroundColor: "#e8e8e8e8",
+    width: "100%",
+    padding: 10,
+    marginTop: 10,
+    position: "relative",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderRadius: 5,
+  },
+  input: {
+    width: "70%",
+  },
+  btn: {
+    width: "30%",
   },
 });
